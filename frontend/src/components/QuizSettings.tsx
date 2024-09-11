@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
 
-export default function QuizSettings({ onGenerate }) {
+
+export type Setting = {
+  numQuestions: any
+  numOptions: any
+  text: string
+}
+
+interface QuizSettings {
+  onGenrate: (setting: Setting) => void
+
+}
+
+
+export default function QuizSettings({ onGenerate }: QuizSettings) {
   const [numQuestions, setNumQuestions] = useState(2);
   const [numOptions, setNumOptions] = useState(5);
   const [text, setText] = useState('');
