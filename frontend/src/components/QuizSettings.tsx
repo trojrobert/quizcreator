@@ -1,21 +1,11 @@
 import React, { useState } from 'react';
 
-
-export type Setting = {
-  numQuestions: any
-  numOptions: any
-  text: string
-}
-
-interface QuizSettings {
-  onGenrate: (setting: Setting) => void
-
-}
-
-
-export default function QuizSettings({ onGenerate }: QuizSettings) {
-  const [numQuestions, setNumQuestions] = useState(2);
-  const [numOptions, setNumOptions] = useState(5);
+export default function QuizSettings({ onGenerate }) {
+  const [contentType, setContentType] = useState('text');
+  const [title, setTitle] = useState('');
+  const [numQuestions, setNumQuestions] = useState(5);
+  const [numOptions, setNumOptions] = useState(4);
+  const [difficulty, setDifficulty] = useState('medium');
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
 
@@ -23,12 +13,12 @@ export default function QuizSettings({ onGenerate }: QuizSettings) {
     e.preventDefault();
     let finalText = text;
 
-    if (file) {
+    if (contentType === 'pdf' && file) {
       const formData = new FormData();
       formData.append('file', file);
 
       try {
-        const response = await fetch('http://localhost:8000/api/upload-pdf', {
+        const response = await fetch('/api/upload-pdf', {
           method: 'POST',
           body: formData,
         });
@@ -36,24 +26,94 @@ export default function QuizSettings({ onGenerate }: QuizSettings) {
           throw new Error('Failed to upload PDF');
         }
         const data = await response.json();
-        finalText += ' ' + data.text;
+        finalText = data.text;
       } catch (error) {
         console.error('Error uploading PDF:', error);
         // Handle error (e.g., show an error message to the user)
       }
     }
 
-    onGenerate({ numQuestions, numOptions, text: finalText });
+    onGenerate({ 
+      title, 
+      numQuestions, 
+      numOptions, 
+      difficulty, 
+      contentType, 
+      text: finalText 
+    });
   };
 
   return (
     <div className="quiz-settings">
-      <h2>Create engaging quizzes in seconds</h2>
+      <h2>Quiz Settings</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="numQuestions">
-            How many questions do you want to create?
-          </label>
+          <label htmlFor="contentType">Content Source</label>
+          <select
+            id="contentType"
+            value={contentType}
+            onChange={(e) => setContentType(e.target.value)}
+          >
+            <option value="pdf">Upload PDF</option>
+            <option value="text">Enter Content</option>
+            <option value="topic">Random Topic</option>
+          </select>
+        </div>
+
+        {contentType === 'text' && (
+          <div className="form-group">
+            <label htmlFor="text">Source Text</label>
+            <textarea
+              id="text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Enter text for quiz generation"
+              rows="4"
+            />
+          </div>
+        )}
+
+        {contentType === 'pdf' && (
+          <div className="form-group">
+            <label htmlFor="file" className="file-input-label">
+              Upload PDF
+              <input
+                id="file"
+                type="file"
+                accept=".pdf"
+                onChange={(e) => setFile(e.target.files[0])}
+                className="file-input"
+              />
+            </label>
+          </div>
+        )}
+
+        {contentType === 'topic' && (
+          <div className="form-group">
+            <label htmlFor="topic">Random Topic</label>
+            <input
+              id="topic"
+              type="text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Enter a topic for quiz generation"
+            />
+          </div>
+        )}
+
+        <div className="form-group">
+          <label htmlFor="title">Quiz Title</label>
+          <input
+            id="title"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter quiz title"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="numQuestions">Number of Questions</label>
           <input
             id="numQuestions"
             type="number"
@@ -63,10 +123,9 @@ export default function QuizSettings({ onGenerate }: QuizSettings) {
             max="20"
           />
         </div>
+
         <div className="form-group">
-          <label htmlFor="numOptions">
-            How many options per question do you want?
-          </label>
+          <label htmlFor="numOptions">Options per Question</label>
           <input
             id="numOptions"
             type="number"
@@ -76,59 +135,77 @@ export default function QuizSettings({ onGenerate }: QuizSettings) {
             max="5"
           />
         </div>
+
         <div className="form-group">
-          <label htmlFor="text">
-            What text do you want to generate questions from?
-          </label>
-          <textarea
-            id="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            rows="5"
-          />
+          <label htmlFor="difficulty">Difficulty Level</label>
+          <select
+            id="difficulty"
+            value={difficulty}
+            onChange={(e) => setDifficulty(e.target.value)}
+          >
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
         </div>
-        <div className="form-group">
-          <label htmlFor="file">
-            Upload a PDF (optional):
-          </label>
-          <input
-            id="file"
-            type="file"
-            accept=".pdf"
-            onChange={(e) => setFile(e.target.files[0])}
-          />
-        </div>
-        <button type="submit">Generate</button>
+
+        <button type="submit">Generate Quiz</button>
       </form>
+
       <style jsx>{`
         .quiz-settings {
-          background-color: #f0f0f0;
-          padding: 20px;
-          border-radius: 8px;
+          color: #ffffff;
+        }
+        h2 {
+          font-size: 1.5rem;
+          margin-bottom: 1rem;
+          color: #5E5CE6;
         }
         .form-group {
-          margin-bottom: 15px;
+          margin-bottom: 1rem;
         }
         label {
           display: block;
-          margin-bottom: 5px;
+          margin-bottom: 0.5rem;
+          color: #ffffff;
         }
-        input, textarea {
+        input[type="number"], input[type="text"], textarea, select {
           width: 100%;
-          padding: 8px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
+          padding: 0.5rem;
+          border-radius: 6px;
+          border: 1px solid #ffffff;
+          background-color: #1c1c1e;
+          color: #ffffff;
+          font-size: 1rem;
+        }
+        .file-input-label {
+          display: inline-block;
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          background-color: #2c2c2e;
+          color: #ffffff;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+        .file-input-label:hover {
+          background-color: #3a3a3c;
+        }
+        .file-input {
+          display: none;
         }
         button {
-          background-color: #4CAF50;
-          color: white;
-          padding: 10px 15px;
+          width: 100%;
+          padding: 0.75rem;
           border: none;
-          border-radius: 4px;
+          border-radius: 6px;
+          background-color: #5E5CE6;
+          color: #ffffff;
+          font-size: 1rem;
           cursor: pointer;
+          transition: background-color 0.3s ease;
         }
         button:hover {
-          background-color: #45a049;
+          background-color: #4b4acf;
         }
       `}</style>
     </div>
