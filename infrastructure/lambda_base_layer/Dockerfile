@@ -3,7 +3,7 @@ FROM amazonlinux:2
 # Install Python
 RUN yum install epel-release \
     yum update \
-    yum install -y python3.10 && \
+    yum install -y python3.11 && \
     yum install -y python3-pip && \
     yum install -y zip && \
     yum clean all
