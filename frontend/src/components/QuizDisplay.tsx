@@ -1,10 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-export default function QuizDisplay({ quiz }) {
+export default function QuizDisplay({ quizSettings }) {
+  const [quiz, setQuiz] = useState(null);
+
+  useEffect(() => {
+    const generateQuiz = async () => {
+      try {
+        const response = await fetch('https://1fume25nei.execute-api.us-east-1.amazonaws.com/prod/api/generate-quiz', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(quizSettings),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to generate quiz');
+        }
+
+        const data = await response.json();
+        setQuiz(data);
+      } catch (error) {
+        console.error('Error generating quiz:', error);
+      }
+    };
+
+    if (quizSettings) {
+      generateQuiz();
+    }
+  }, [quizSettings]);
+
   if (!quiz) {
     return (
       <div className="quiz-display empty">
-        <p>Generate a quiz to see it here!</p>
+        <p>Generated quiz will be seen here!</p>
         <style jsx>{`
           .quiz-display.empty {
             display: flex;
@@ -33,48 +62,6 @@ export default function QuizDisplay({ quiz }) {
           <p className="answer">Answer: {question.answer}</p>
         </div>
       ))}
-      <style jsx>{`
-        .quiz-display {
-          color: #ffffff;
-        }
-        h2 {
-          font-size: 1.8rem;
-          margin-bottom: 1.5rem;
-          color: #5E5CE6;
-        }
-        .question {
-          background-color: #1c1c1e;
-          border-radius: 8px;
-          padding: 1.5rem;
-          margin-bottom: 1.5rem;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        h3 {
-          font-size: 1.2rem;
-          margin-top: 0;
-          margin-bottom: 1rem;
-          color: #ffffff;
-        }
-        ul {
-          list-style-type: none;
-          padding-left: 0;
-        }
-        li {
-          background-color: #2c2c2e;
-          border-radius: 6px;
-          padding: 0.75rem 1rem;
-          margin-bottom: 0.5rem;
-          transition: background-color 0.3s ease;
-        }
-        li:hover {
-          background-color: #3a3a3c;
-        }
-        .answer {
-          margin-top: 1rem;
-          font-weight: bold;
-          color: #5E5CE6;
-        }
-      `}</style>
     </div>
   );
 }

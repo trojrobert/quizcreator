@@ -8,6 +8,8 @@ export default function QuizSettings({ onGenerate }) {
   const [difficulty, setDifficulty] = useState('medium');
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
+  const [uploadStatus, setUploadStatus] = useState(''); // For success or error messages
+  const [uploadedFileName, setUploadedFileName] = useState(''); // To store the file name
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,28 +20,44 @@ export default function QuizSettings({ onGenerate }) {
       formData.append('file', file);
 
       try {
-        const response = await fetch('/api/upload-pdf', {
+        const response = await fetch('https://1fume25nei.execute-api.us-east-1.amazonaws.com/prod/api/upload-pdf', {
           method: 'POST',
           body: formData,
         });
+
         if (!response.ok) {
-          throw new Error('Failed to upload PDF');
+          const errorMessage = `Failed to upload PDF: ${response.statusText}`;
+          console.error(errorMessage);
+          setUploadStatus(errorMessage); // Set the error message to be displayed on the frontend
+          throw new Error(errorMessage);
         }
+
         const data = await response.json();
         finalText = data.text;
+
+        setUploadStatus('File uploaded successfully'); // Set the success message
+        setUploadedFileName(file.name); // Display the uploaded file name
+        console.log('File uploaded successfully:', data);
       } catch (error) {
         console.error('Error uploading PDF:', error);
-        // Handle error (e.g., show an error message to the user)
+        setUploadStatus(`Error uploading PDF: ${error.message}`); // Display the error message on the frontend
+        return; // Exit the function on failure
       }
+    } else if (contentType === 'pdf' && !file) {
+      const noFileError = 'No file selected for upload.';
+      console.error(noFileError);
+      setUploadStatus(noFileError); // Display the error message on the frontend
+      return; // Exit the function if no file is selected
     }
 
-    onGenerate({ 
-      title, 
-      numQuestions, 
-      numOptions, 
-      difficulty, 
-      contentType, 
-      text: finalText 
+    // Proceed to generate the quiz after a successful file upload or if no file is needed.
+    onGenerate({
+      title,
+      numQuestions,
+      numOptions,
+      difficulty,
+      contentType,
+      text: finalText,
     });
   };
 

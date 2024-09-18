@@ -26,7 +26,7 @@ export default function Home() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>QuizCrafter AI</h1>
+        <h1>Quiz Gen AI</h1>
         <p>Create quizzes from documents, URLs, or topics with AI assistance</p>
       </header>
       <main className="content-container">
