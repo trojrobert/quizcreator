@@ -1,13 +1,15 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from typing import List
-import uvicorn
 
-from quiz_generator import generate_quiz
+import uvicorn
+from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
 from pdf_processor import extract_text_from_pdf
+from pydantic import BaseModel
+from quiz_generator import generate_quiz
 
 app = FastAPI()
+handler = Mangum(app)
 
 # Add CORS middleware
 app.add_middleware(
