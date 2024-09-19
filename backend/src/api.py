@@ -14,13 +14,14 @@ handler = Mangum(app)
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Adjust this to your frontend's URL
+    allow_origins=["*"],  # Adjust this to your frontend's URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
+# Models
 class QuizSettings(BaseModel):
     text: str
     numQuestions: int
@@ -33,19 +34,29 @@ class QuizQuestion(BaseModel):
     answer: str
 
 
-class Quiz(BaseModel):
-    questions: List[QuizQuestion]
+# Health check endpoint
+@app.get("/health")
+async def check_health():
+    return {"message": "Good"}
 
 
-@app.post("/api/generate-quiz", response_model=Quiz)
+# Generate quiz endpoint
+@app.post("/api/generate-quiz")
 async def api_generate_quiz(settings: QuizSettings):
     try:
-        quiz = generate_quiz(settings.text, settings.numQuestions, settings.numOptions)
-        return Quiz(questions=quiz["questions"])
+        # Generate the quiz using the provided settings
+        quiz_data = generate_quiz(
+            settings.text, settings.numQuestions, settings.numOptions
+        )
+
+        # # Ensure that the quiz data matches the QuizQuestion model structure
+        # quiz = [QuizQuestion(**question) for question in quiz_data]
+        return quiz_data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# Upload PDF and extract text endpoint
 @app.post("/api/upload-pdf")
 async def upload_pdf(file: UploadFile = File(...)):
     try:
@@ -56,5 +67,6 @@ async def upload_pdf(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+# Uncomment for local development if needed
+# if __name__ == "__main__":
+#     uvicorn.run("api:app", host="0.0.0.0", port=8080, reload=True)
