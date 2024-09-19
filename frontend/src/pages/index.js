@@ -1,25 +1,27 @@
 import React, { useState } from 'react';
 import QuizSettings from '../components/QuizSettings';
 import QuizDisplay from '../components/QuizDisplay';
+import axios from 'axios';
 
 export default function Home() {
   const [quiz, setQuiz] = useState(null);
 
   const generateQuiz = async (settings) => {
+    console.log(settings);
     try {
-      const response = await fetch('/api/generate-quiz', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to generate quiz');
-      }
-      const data = await response.json();
-      setQuiz(data);
+      const response = await axios.post(
+        'https://82tbo22h05.execute-api.us-east-1.amazonaws.com/prod/api/generate-quiz',
+        {
+          "title":"",
+          "numQuestions":3,
+          "numOptions":3,
+          "difficulty":"hard",
+          "text":"175.000 € \nKaufpreis66 \nWohnfläche (ca.)2\nZimmer\nImmobilienart\nKategorie\nKaufpreis\nWohnfläche\nZimmer\nBezug\nKäuferprovisionZusammenfassung\nWohnung\nEtagenwohnung\n175.000 €\nca. 66,00 m²\n2\nsofort\n3,57% incl. MWSTAnbieter\nImmobilien Walther Leipzig \nWittenberger Straße 15 \n04129 Leipzig\nAnsprechpartner\nHerr Sven Walther \nTelefon: 0341/9188518 \nFax: 0341/9188519 \n2­Raum Wohnung++ 2.OG++ Balkon++ EBK++ ruhige Seitenstraße++sofort frei\n04177 Leipzig (Altlindenau), Karl­Ferlemann­Straße 51\nBalkon, Kelleranteil, Einbauküche, Zentralheizung, frei\nEnergie / Versorgung\nEnergieausweis für diesen Gebäudetyp nicht\nnotwendigEnergieträger:  Gas\nZentralheizung\nObjektbeschreibung Die zum Verkauf stehende 2 ZKB Wohnung befindet sich im 2."
+       },
+      );
+      setQuiz(response.data);
     } catch (error) {
       console.error('Error generating quiz:', error);
-      // Handle error (e.g., show an error message to the user)
     }
   };
 

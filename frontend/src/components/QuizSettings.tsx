@@ -20,8 +20,9 @@ export default function QuizSettings({ onGenerate }) {
       formData.append('file', file);
 
       try {
-        const response = await fetch('https://1fume25nei.execute-api.us-east-1.amazonaws.com/prod/api/upload-pdf', {
+        const response = await fetch('https://82tbo22h05.execute-api.us-east-1.amazonaws.com/prod/api/upload-pdf', {
           method: 'POST',
+          mode: 'no-cors',
           body: formData,
         });
 
@@ -56,7 +57,6 @@ export default function QuizSettings({ onGenerate }) {
       numQuestions,
       numOptions,
       difficulty,
-      contentType,
       text: finalText,
     });
   };

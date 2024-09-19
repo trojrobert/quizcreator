@@ -1,35 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-export default function QuizDisplay({ quizSettings }) {
-  const [quiz, setQuiz] = useState(null);
-
-  useEffect(() => {
-    const generateQuiz = async () => {
-      try {
-        const response = await fetch('https://1fume25nei.execute-api.us-east-1.amazonaws.com/prod/api/generate-quiz', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(quizSettings),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to generate quiz');
-        }
-
-        const data = await response.json();
-        setQuiz(data);
-      } catch (error) {
-        console.error('Error generating quiz:', error);
-      }
-    };
-
-    if (quizSettings) {
-      generateQuiz();
-    }
-  }, [quizSettings]);
-
+export default function QuizDisplay({ quiz }) {
   if (!quiz) {
     return (
       <div className="quiz-display empty">

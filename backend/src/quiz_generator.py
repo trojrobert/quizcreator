@@ -10,12 +10,12 @@ load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 
 
-def generate_quiz(text, num_questions, num_options):
+def generate_quiz(title, numQuestions, numOptions, difficulty, text):
     # TODO: make it an async function
     # TODO: add typing
     prompt = f"""
-    Based on the following text, generate a quiz with {num_questions} questions. 
-    Each question should have {num_options} options with only one correct answer. 
+    Based on the following text, generate a quiz with {numQuestions} questions. 
+    Each question should have {numOptions} options with only one correct answer. 
     Provide the correct answer for each question.
     Format the output as a JSON array of objects, where each object represents a question with the following structure:
     {{
@@ -57,4 +57,4 @@ def generate_quiz(text, num_questions, num_options):
     print(f"response \n {type(validated_quiz_json)} \n {validated_quiz_json}")
 
     # quiz = json.loads(quiz_json)
-    return validated_quiz_json
+    return {"message": "quiz generated"}

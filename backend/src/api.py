@@ -14,7 +14,7 @@ handler = Mangum(app)
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust this to your frontend's URL
+    allow_origins=["*"],  # Adjust this to frontend's URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -23,9 +23,11 @@ app.add_middleware(
 
 # Models
 class QuizSettings(BaseModel):
-    text: str
+    title: str
     numQuestions: int
     numOptions: int
+    difficulty: str
+    text: str
 
 
 class QuizQuestion(BaseModel):
@@ -46,7 +48,11 @@ async def api_generate_quiz(settings: QuizSettings):
     try:
         # Generate the quiz using the provided settings
         quiz_data = generate_quiz(
-            settings.text, settings.numQuestions, settings.numOptions
+            settings.title,
+            settings.numQuestions,
+            settings.numOptions,
+            settings.difficulty,
+            settings.text,
         )
 
         # # Ensure that the quiz data matches the QuizQuestion model structure
