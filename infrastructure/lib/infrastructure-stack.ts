@@ -13,15 +13,16 @@ export class InfrastructureStack extends cdk.Stack {
     super(scope, id, props);
 
     const layer = new lambda.LayerVersion(this, "BaseLayer", {
-      code: lambda.Code.fromAsset("lambda_base_layer/layer.zip"),
-      compatibleRuntimes: [lambda.Runtime.PYTHON_3_11]
+      code: lambda.Code.fromAsset("../backend/layer.zip"),
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_10],
     });
+
 
     const apiLambda = new lambda.Function(this, "ApiFunction", {
 
-      runtime: lambda.Runtime.PYTHON_3_11,
+      runtime: lambda.Runtime.PYTHON_3_10,
       code: lambda.Code.fromAsset("../backend/src/"),
-      handler: "main.handler",
+      handler: "api.handler",
       layers: [layer],
       environment: {
         OPENAI_API_KEY: process.env.OPENAI_API_KEY ?? "",
@@ -37,6 +38,6 @@ export class InfrastructureStack extends cdk.Stack {
     gateway.root.addProxy({
       defaultIntegration: new apiGateway.LambdaIntegration(apiLambda),
     });
-    
+
   }
 }

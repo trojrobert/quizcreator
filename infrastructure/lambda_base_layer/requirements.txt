@@ -1,8 +1,0 @@
-python-dotenv 
-fastapi 
-uvicorn 
-openai 
-langchain 
-pypdf2 
-python-multipart 
-mangum 
