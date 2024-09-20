@@ -51,14 +51,16 @@ export default function QuizSettings({ onGenerate }) {
       return; // Exit the function if no file is selected
     }
 
-    // Proceed to generate the quiz after a successful file upload or if no file is needed.
-    onGenerate({
+    const data = {
       title,
       numQuestions,
       numOptions,
       difficulty,
       text: finalText,
-    });
+    }
+
+    // Proceed to generate the quiz after a successful file upload or if no file is needed.
+    onGenerate(data);
   };
 
   return (
@@ -86,7 +88,8 @@ export default function QuizSettings({ onGenerate }) {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Enter text for quiz generation"
-              rows="4"
+              className='quiz-text-area'
+              rows='4'
             />
           </div>
         )}
@@ -189,12 +192,14 @@ export default function QuizSettings({ onGenerate }) {
         }
         input[type="number"], input[type="text"], textarea, select {
           width: 100%;
+          width: -webkit-fill-available
           padding: 0.5rem;
           border-radius: 6px;
           border: 1px solid #ffffff;
           background-color: #1c1c1e;
           color: #ffffff;
           font-size: 1rem;
+          height:30px
         }
         .file-input-label {
           display: inline-block;
@@ -224,6 +229,9 @@ export default function QuizSettings({ onGenerate }) {
         }
         button:hover {
           background-color: #4b4acf;
+        }
+        .quiz-text-area{
+          height:100px
         }
       `}</style>
     </div>
