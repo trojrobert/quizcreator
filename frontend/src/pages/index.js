@@ -11,18 +11,14 @@ export default function Home() {
     try {
       const response = await axios.post(
         'https://82tbo22h05.execute-api.us-east-1.amazonaws.com/prod/api/generate-quiz',
-        settings, // Pass settings as the request body
+        settings,
         {
           headers: {
             'Content-Type': 'application/json'
           }
         }
+
       );
-      setQuiz(response.data);
-    } catch (error) {
-      console.error('Error generating quiz:', error);
-    }
-  };
       setQuiz(response.data);
     } catch (error) {
       console.error('Error generating quiz:', error);
